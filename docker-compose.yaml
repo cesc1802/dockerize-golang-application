@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  postgres:
+    image: bitnami/postgresql:13
+    environment:
+      POSTGRESQL_USERNAME: dbadmin
+      POSTGRESQL_PASSWORD: demo@123456
+      POSTGRESQL_DATABASE: demo
+    networks:
+      - backend
+
+  go-app:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+networks:
+  backend:
